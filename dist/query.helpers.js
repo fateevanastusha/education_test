@@ -14,28 +14,28 @@ exports.queryHelpers = {
     date(date) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!date)
-                return date;
+                return undefined;
             return date.trim();
         });
     },
     status(status) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!status)
-                return status;
+                return undefined;
             return +status;
         });
     },
     teacherIds(teacherIds) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!teacherIds)
-                return teacherIds;
+                return undefined;
             return teacherIds.trim();
         });
     },
     studentsCount(studentsCount) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!studentsCount)
-                return studentsCount;
+                return undefined;
             return studentsCount.trim();
         });
     },

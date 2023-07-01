@@ -1,19 +1,19 @@
 
 export const queryHelpers = {
     async date (date : string | undefined) {
-        if(!date) return date
+        if(!date) return undefined
         return date.trim()
     },
-    async status (status : string | undefined) {
-        if(!status) return status
+    async status (status : string | undefined) : Promise<undefined | number> {
+        if(!status) return undefined
         return +status
     },
     async teacherIds (teacherIds : string | undefined) {
-        if(!teacherIds) return teacherIds
+        if(!teacherIds) return undefined
         return teacherIds.trim()
     },
     async studentsCount (studentsCount : string | undefined) {
-        if(!studentsCount) return studentsCount
+        if(!studentsCount) return undefined
         return studentsCount.trim()
     },
     async page (page : string | undefined) {

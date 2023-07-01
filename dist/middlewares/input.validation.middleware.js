@@ -23,7 +23,7 @@ const inputValidationMiddleware = (req, res, next) => {
             })
         });
     }
-    next();
+    return next();
 };
 exports.inputValidationMiddleware = inputValidationMiddleware;
 const checkForDate = (date, { req }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,27 +33,32 @@ const checkForDate = (date, { req }) => __awaiter(void 0, void 0, void 0, functi
 exports.checkForDate = checkForDate;
 const checkForStatus = (status, { req }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!status)
-        return;
+        req.skipInputValidation = true;
+    return;
 });
 exports.checkForStatus = checkForStatus;
 const checkForTeacherIds = (teacherIds, { req }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!teacherIds)
-        return;
+        req.skipInputValidation = true;
+    return;
 });
 exports.checkForTeacherIds = checkForTeacherIds;
 const checkStudentsCount = (studentsCount, { req }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!studentsCount)
-        return;
+        req.skipInputValidation = true;
+    return;
 });
 exports.checkStudentsCount = checkStudentsCount;
 const checkForPage = (lessonsPerPage, { req }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!lessonsPerPage)
-        return;
+        req.skipInputValidation = true;
+    return;
 });
 exports.checkForPage = checkForPage;
 const checkForLessonsPerPage = (lessonsPerPage, { req }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!lessonsPerPage)
-        return;
+        req.skipInputValidation = true;
+    return;
 });
 exports.checkForLessonsPerPage = checkForLessonsPerPage;
 exports.dateValidation = (0, express_validator_1.param)('date').custom(exports.checkForDate).matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/);

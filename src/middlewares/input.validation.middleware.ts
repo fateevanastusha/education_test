@@ -13,7 +13,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
             })
         })
     }
-    next()
+    return next()
 }
 
 
@@ -21,19 +21,29 @@ export const checkForDate : CustomValidator = async (date, { req }) => {
     if (!date) return;
 }
 export const checkForStatus : CustomValidator = async (status, { req }) => {
-    if (!status) return;
+    if (!status)
+        req.skipInputValidation = true;
+        return;
 }
 export const checkForTeacherIds : CustomValidator = async (teacherIds, { req }) => {
-    if (!teacherIds) return;
+    if (!teacherIds)
+        req.skipInputValidation = true;
+        return;
 }
 export const checkStudentsCount : CustomValidator = async (studentsCount, { req }) => {
-    if (!studentsCount) return;
+    if (!studentsCount)
+        req.skipInputValidation = true;
+        return;
 }
 export const checkForPage : CustomValidator = async (lessonsPerPage, { req }) => {
-    if (!lessonsPerPage) return;
+    if (!lessonsPerPage)
+        req.skipInputValidation = true;
+        return;
 }
 export const checkForLessonsPerPage : CustomValidator = async (lessonsPerPage, { req }) => {
-    if (!lessonsPerPage) return;
+    if (!lessonsPerPage)
+        req.skipInputValidation = true;
+        return;
 }
 
 
