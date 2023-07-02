@@ -17,7 +17,7 @@ class EducationRepository {
             const skipSize = lessonsPerPage * (page - 1);
             console.log(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage);
             const lessons = yield index_1.pool.query(`
-            SELECT 
+        SELECT 
                 l."id", l."date", l."title", l."status", 
                 COUNT(ls."student_id") AS "visitCount",
                 array_agg(DISTINCT ls."student_id") AS "student_ids",
@@ -26,11 +26,11 @@ class EducationRepository {
                     LEFT JOIN public."lesson_students" ls ON l."id" = ls."lesson_id" AND ls."visit" = true
                     LEFT JOIN public."lesson_teachers" lt ON l."id" = lt."lesson_id"
                     WHERE 
-                         ((${date_1}='null' AND ${date_2}='null') 
-                          OR 
-                          (${date_1}!='null' AND ${date_2}='null' AND l."date" = '${date_1}') 
-                          OR 
-                          (${date_1}!='null AND  ${date_2}!='null' AND l."date" BETWEEN '${date_1}' AND '${date_2}')) 
+                    CASE
+                    WHEN ${date_1} IS NULL AND ${date_2} IS NULL THEN true
+                    WHEN ${date_1} IS NOT NULL AND ${date_2} IS NULL THEN l."date" = ${date_1}
+                    ELSE l."date" BETWEEN ${date_1} AND ${date_2}
+                    END
                         AND 
                         CASE 
                             WHEN ${status} = 1 THEN l."status" = 1 
@@ -45,9 +45,10 @@ class EducationRepository {
                         OR
                         (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NOT NULL AND COUNT(ls."student_id") BETWEEN ${studentsCount_1} AND ${studentsCount_2}))
                         AND
-                        ((${teacherIds} IS NULL) 
-                        OR
-                        (${teacherIds} IS NOT NULL AND ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id"))) && ARRAY[${teacherIds}]))
+                        (CASE
+                        WHEN ${teacherIds} IS NULL THEN true
+                        ELSE ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id")::integer[])) && ARRAY[${teacherIds}]::integer[]
+                        END)
                     ORDER BY l."date"
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `);

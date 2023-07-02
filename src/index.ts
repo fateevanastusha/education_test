@@ -34,12 +34,13 @@ app.get('/',
     lessonsPerPageValidation,
     inputValidationMiddleware,
     async (req : Request, res : Response) => {
-        const date = await queryHelpers.date(req.params.date)
-        const status = await queryHelpers.status(req.params.status)
-        const teacherIds = await queryHelpers.teacherIds(req.params.teacherIds)
-        const studentsCount = await queryHelpers.studentsCount(req.params.studentsCount)
-        const page = await queryHelpers.page(req.params.page)
-        const lessonsPerPage = await queryHelpers.lessonsPerPage(req.params.lessonsPerPage)
+        const date = await queryHelpers.date(<string>req.query.date)
+        const status = await queryHelpers.status(<string>req.query.status)
+        const teacherIds = await queryHelpers.teacherIds(<string>req.query.teacherIds)
+        const studentsCount = await queryHelpers.studentsCount(<string>req.query.studentsCount)
+        const page = await queryHelpers.page(<string>req.query.page)
+        const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage)
+        console.log(date)
         const result = await educationService.getLessons(
             date[0],
             date[1],

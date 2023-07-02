@@ -28,12 +28,13 @@ exports.pool = new Pool({
 });
 const educationService = new education_service_1.EducationService();
 exports.app.get('/', input_validation_middleware_1.dateValidation, input_validation_middleware_1.statusValidation, input_validation_middleware_1.teacherIdsValidation, input_validation_middleware_1.studentsCountValidation, input_validation_middleware_1.pageValidation, input_validation_middleware_1.lessonsPerPageValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const date = yield query_helpers_1.queryHelpers.date(req.params.date);
-    const status = yield query_helpers_1.queryHelpers.status(req.params.status);
-    const teacherIds = yield query_helpers_1.queryHelpers.teacherIds(req.params.teacherIds);
-    const studentsCount = yield query_helpers_1.queryHelpers.studentsCount(req.params.studentsCount);
-    const page = yield query_helpers_1.queryHelpers.page(req.params.page);
-    const lessonsPerPage = yield query_helpers_1.queryHelpers.lessonsPerPage(req.params.lessonsPerPage);
+    const date = yield query_helpers_1.queryHelpers.date(req.query.date);
+    const status = yield query_helpers_1.queryHelpers.status(req.query.status);
+    const teacherIds = yield query_helpers_1.queryHelpers.teacherIds(req.query.teacherIds);
+    const studentsCount = yield query_helpers_1.queryHelpers.studentsCount(req.query.studentsCount);
+    const page = yield query_helpers_1.queryHelpers.page(req.query.page);
+    const lessonsPerPage = yield query_helpers_1.queryHelpers.lessonsPerPage(req.query.lessonsPerPage);
+    console.log(date);
     const result = yield educationService.getLessons(date[0], date[1], status, teacherIds, studentsCount[0], studentsCount[1], page, lessonsPerPage);
     res.send(result).status(204);
 }));
