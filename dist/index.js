@@ -34,7 +34,6 @@ exports.app.get('/', input_validation_middleware_1.dateValidation, input_validat
     const studentsCount = yield query_helpers_1.queryHelpers.studentsCount(req.query.studentsCount);
     const page = yield query_helpers_1.queryHelpers.page(req.query.page);
     const lessonsPerPage = yield query_helpers_1.queryHelpers.lessonsPerPage(req.query.lessonsPerPage);
-    console.log(date);
     const result = yield educationService.getLessons(date[0], date[1], status, teacherIds, studentsCount[0], studentsCount[1], page, lessonsPerPage);
     res.send(result).status(204);
 }));

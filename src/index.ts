@@ -40,7 +40,6 @@ app.get('/',
         const studentsCount = await queryHelpers.studentsCount(<string>req.query.studentsCount)
         const page = await queryHelpers.page(<string>req.query.page)
         const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage)
-        console.log(date)
         const result = await educationService.getLessons(
             date[0],
             date[1],

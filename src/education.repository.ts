@@ -10,8 +10,7 @@ export class EducationRepository {
                      page : number,
                      lessonsPerPage : number){
         const skipSize: number = lessonsPerPage * (page - 1)
-        console.log(date_1,date_2,status,teacherIds,studentsCount_1,studentsCount_2,page,lessonsPerPage)
-        const lessons = await pool.query(`
+        const result = await pool.query(`
         SELECT 
                 l."id", l."date", l."title", l."status", 
                 COUNT(ls."student_id") AS "visitCount",
@@ -46,7 +45,29 @@ export class EducationRepository {
                         END)
                     ORDER BY l."date"
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
-        `)
-        return lessons.rows
+        `);
+        const lessons = result.rows
+        console.log(lessons)
+        return await Promise.all(lessons.map(async (lesson) => {
+            return {
+                id: lesson.id,
+                date: lesson.date,
+                title: lesson.title,
+                status: lesson.status,
+                visitCount: lesson.visitCount,
+                students: (await pool.query(`
+                      SELECT "student_id", "visit", "name"
+                      FROM public."lesson_students" ls 
+                      JOIN public."students" s ON ls."student_id" = s."id"
+                      WHERE ls."student_id" = ANY($1::integer[]) AND ls."lesson_id" = $2;
+                    `, [lesson.student_ids, lesson.id])).rows,
+                                teachers: (await pool.query(`
+                      SELECT "teacher_id" AS "id", "name"
+                      FROM public."lesson_teachers" lt
+                      JOIN public."teachers" t ON lt."teacher_id" = t."id"
+                      WHERE lt."teacher_id" = ANY($1::integer[]) AND lt."lesson_id" = $2;
+                    `, [lesson.teacher_ids, lesson.id])).rows
+            }
+        }))
     }
 }
