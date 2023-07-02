@@ -5,7 +5,7 @@ import {
     teacherIdsValidation
 } from "./middlewares/input.validation.middleware";
 import {Request, Response} from "express";
-import {queryHelpers} from "./query.helpers";
+import {queryHelpers} from "./middlewares/query.helpers";
 import {app, pool} from "./index";
 import {EducationService} from "./education.service";
 

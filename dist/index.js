@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.pool = exports.app = void 0;
 const education_service_1 = require("./education.service");
 const input_validation_middleware_1 = require("./middlewares/input.validation.middleware");
-const query_helpers_1 = require("./query.helpers");
+const query_helpers_1 = require("./middlewares/query.helpers");
 const express = require('express');
 const bodyParser = require('body-parser');
 exports.app = express();
@@ -34,11 +34,9 @@ exports.app.get('/', input_validation_middleware_1.dateValidation, input_validat
     const studentsCount = yield query_helpers_1.queryHelpers.studentsCount(req.params.studentsCount);
     const page = yield query_helpers_1.queryHelpers.page(req.params.page);
     const lessonsPerPage = yield query_helpers_1.queryHelpers.lessonsPerPage(req.params.lessonsPerPage);
-    const result = yield educationService.getLessons(date, status, teacherIds, studentsCount, page, lessonsPerPage);
+    const result = yield educationService.getLessons(date[0], date[1], status, teacherIds, studentsCount[0], studentsCount[1], page, lessonsPerPage);
     res.send(result).status(204);
 }));
 exports.app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield exports.pool.query(`SELECT * FROM public.teachers;`);
-    console.log(result.rows);
     console.log(`Example app listening on port ${port}`);
 }));

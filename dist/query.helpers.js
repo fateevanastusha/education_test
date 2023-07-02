@@ -14,29 +14,35 @@ exports.queryHelpers = {
     date(date) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!date)
-                return undefined;
-            return date.trim();
+                return [null, null];
+            const dataList = date.trim().split(',');
+            if (!dataList[1])
+                return [dataList[0], ''];
+            return dataList;
         });
     },
     status(status) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!status)
-                return undefined;
-            return +status;
+                return null;
+            return status;
         });
     },
     teacherIds(teacherIds) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!teacherIds)
-                return undefined;
+                return null;
             return teacherIds.trim();
         });
     },
     studentsCount(studentsCount) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!studentsCount)
-                return undefined;
-            return studentsCount.trim();
+                return [null, null];
+            const countList = studentsCount.trim().split(',');
+            if (!countList[1])
+                return [countList[0], null];
+            return countList;
         });
     },
     page(page) {
@@ -49,7 +55,7 @@ exports.queryHelpers = {
     lessonsPerPage(lessonsPerPage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!lessonsPerPage)
-                return 1;
+                return 10;
             return +lessonsPerPage;
         });
     },

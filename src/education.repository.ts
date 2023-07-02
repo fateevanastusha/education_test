@@ -3,13 +3,14 @@ import {pool} from "./index";
 export class EducationRepository {
     async getLessons(date_1 : string | null,
                      date_2 : string | null,
-                     status : '1' | '0' | null,
-                     teacherIds : number[] | null,
+                     status : string | null,
+                     teacherIds : string | null,
                      studentsCount_1 : string | null,
                      studentsCount_2 : string | null,
                      page : number,
                      lessonsPerPage : number){
         const skipSize: number = lessonsPerPage * (page - 1)
+        console.log(date_1,date_2,status,teacherIds,studentsCount_1,studentsCount_2,page,lessonsPerPage)
         const lessons = await pool.query(`
             SELECT 
                 l."id", l."date", l."title", l."status", 
@@ -20,11 +21,11 @@ export class EducationRepository {
                     LEFT JOIN public."lesson_students" ls ON l."id" = ls."lesson_id" AND ls."visit" = true
                     LEFT JOIN public."lesson_teachers" lt ON l."id" = lt."lesson_id"
                     WHERE 
-                         (('${date_1}' IS NULL AND '${date_2}' IS NULL) 
+                         ((${date_1}='null' AND ${date_2}='null') 
                           OR 
-                          ('${date_1}' IS NOT NULL AND '${date_2}' IS NULL AND l."date" = '${date_1}') 
+                          (${date_1}!='null' AND ${date_2}='null' AND l."date" = '${date_1}') 
                           OR 
-                          ('${date_1}' IS NOT NULL AND '${date_2}' IS NOT NULL AND l."date" BETWEEN '${date_1}' AND '${date_2}')) 
+                          (${date_1}!='null AND  ${date_2}!='null' AND l."date" BETWEEN '${date_1}' AND '${date_2}')) 
                         AND 
                         CASE 
                             WHEN ${status} = 1 THEN l."status" = 1 
@@ -41,7 +42,7 @@ export class EducationRepository {
                         AND
                         ((${teacherIds} IS NULL) 
                         OR
-                        (ARRAY${teacherIds} IS NOT NULL AND ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id"))) && ARRAY${teacherIds}))
+                        (${teacherIds} IS NOT NULL AND ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id"))) && ARRAY[${teacherIds}]))
                     ORDER BY l."date"
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `)

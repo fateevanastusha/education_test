@@ -12,33 +12,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EducationRepository = void 0;
 const index_1 = require("./index");
 class EducationRepository {
-    getLessons(date, status, teacherIds, studentsCount, page, lessonsPerPage) {
+    getLessons(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = lessonsPerPage * (page - 1);
+            console.log(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage);
             const lessons = yield index_1.pool.query(`
-        SELECT l.id, l.title, l.status, l.date,
-            COUNT(ls.visit) AS "visitCount",
-            array_agg(DISTINCT s.id) AS students,
-            array_agg(DISTINCT t.id) AS teachers
-                FROM lessons l
-                LEFT JOIN lesson_students ls ON l.id = ls.lesson_id
-                LEFT JOIN students s ON ls.student_id = s.id
-                LEFT JOIN lesson_teachers lt ON l.id = lt.lesson_id
-                LEFT JOIN teachers t ON lt.teacher_id = t.id
-                WHERE
-                    ($1::date IS NULL OR l.date = $1::date) -- Фильтр по дате
-                    AND ($2 IS NULL OR l.status = $2) -- Фильтр по статусу
-                    AND ($3::int[] IS NULL OR lt.teacher_id = ANY($3::int[])) -- Фильтр по идентификаторам учителей
-                    AND (
-                        ($4 IS NULL AND ($5 IS NULL OR $6 IS NULL)) OR -- Не указано количество записанных учеников
-                        (
-                            ($4 IS NOT NULL AND (SELECT COUNT(*) FROM lesson_students WHERE lesson_id = l.id) = $4) OR -- Точное количество записанных учеников
-                            ($5 IS NOT NULL AND $6 IS NOT NULL AND (SELECT COUNT(*) FROM lesson_students WHERE lesson_id = l.id) BETWEEN $5 AND $6) -- Диапазон количества записанных учеников
-                        )
-                    )
-                GROUP BY l.id
-                ORDER BY l.date ASC
-                OFFSET $7 LIMIT $8;
+            SELECT 
+                l."id", l."date", l."title", l."status", 
+                COUNT(ls."student_id") AS "visitCount",
+                array_agg(DISTINCT ls."student_id") AS "student_ids",
+                array_agg(DISTINCT lt."teacher_id") AS "teacher_ids"
+                    FROM public."lessons" l
+                    LEFT JOIN public."lesson_students" ls ON l."id" = ls."lesson_id" AND ls."visit" = true
+                    LEFT JOIN public."lesson_teachers" lt ON l."id" = lt."lesson_id"
+                    WHERE 
+                         ((${date_1}='null' AND ${date_2}='null') 
+                          OR 
+                          (${date_1}!='null' AND ${date_2}='null' AND l."date" = '${date_1}') 
+                          OR 
+                          (${date_1}!='null AND  ${date_2}!='null' AND l."date" BETWEEN '${date_1}' AND '${date_2}')) 
+                        AND 
+                        CASE 
+                            WHEN ${status} = 1 THEN l."status" = 1 
+                            WHEN ${status} = 0 THEN l."status" = 0 
+                            ELSE l."status" IN (0,1) 
+                            END
+                    GROUP BY l."id", l."date", l."title", l."status"
+                    HAVING
+                        ((${studentsCount_1} IS NULL AND ${studentsCount_2} IS NULL)
+                        OR
+                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NULL AND COUNT(ls."student_id") = ${studentsCount_1})
+                        OR
+                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NOT NULL AND COUNT(ls."student_id") BETWEEN ${studentsCount_1} AND ${studentsCount_2}))
+                        AND
+                        ((${teacherIds} IS NULL) 
+                        OR
+                        (${teacherIds} IS NOT NULL AND ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id"))) && ARRAY[${teacherIds}]))
+                    ORDER BY l."date"
+                    OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `);
             return lessons.rows;
         });

@@ -15,9 +15,9 @@ class EducationService {
     constructor() {
         this.educationRepository = new education_repository_1.EducationRepository();
     }
-    getLessons(date, status, teacherIds, studentsCount, page, lessonsPerPage) {
+    getLessons(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.educationRepository.getLessons(date, status, teacherIds, studentsCount, page, lessonsPerPage);
+            return yield this.educationRepository.getLessons(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage);
         });
     }
 }

@@ -6,7 +6,7 @@ import {
     teacherIdsValidation
 } from "./middlewares/input.validation.middleware";
 import {Request, Response} from "express";
-import {queryHelpers} from "./query.helpers";
+import {queryHelpers} from "./middlewares/query.helpers";
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -40,12 +40,19 @@ app.get('/',
         const studentsCount = await queryHelpers.studentsCount(req.params.studentsCount)
         const page = await queryHelpers.page(req.params.page)
         const lessonsPerPage = await queryHelpers.lessonsPerPage(req.params.lessonsPerPage)
-        const result = await educationService.getLessons(date,status,teacherIds,studentsCount,page,lessonsPerPage)
+        const result = await educationService.getLessons(
+            date[0],
+            date[1],
+            status,
+            teacherIds,
+            studentsCount[0],
+            studentsCount[1],
+            page,
+            lessonsPerPage
+        )
         res.send(result).status(204)
     })
 
 app.listen(port, async () => {
-    const result = await pool.query(`SELECT * FROM public.teachers;`)
-    console.log(result.rows)
     console.log(`Example app listening on port ${port}`)
 })

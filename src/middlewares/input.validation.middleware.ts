@@ -1,5 +1,5 @@
 import { NextFunction, Response, Request } from "express";
-import {CustomValidator, param, validationResult} from 'express-validator';
+import {CustomValidator, param, query, validationResult} from 'express-validator';
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req)
@@ -16,40 +16,9 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
     return next()
 }
 
-
-export const checkForDate : CustomValidator = async (date, { req }) => {
-    if (!date) return;
-}
-export const checkForStatus : CustomValidator = async (status, { req }) => {
-    if (!status)
-        req.skipInputValidation = true;
-        return;
-}
-export const checkForTeacherIds : CustomValidator = async (teacherIds, { req }) => {
-    if (!teacherIds)
-        req.skipInputValidation = true;
-        return;
-}
-export const checkStudentsCount : CustomValidator = async (studentsCount, { req }) => {
-    if (!studentsCount)
-        req.skipInputValidation = true;
-        return;
-}
-export const checkForPage : CustomValidator = async (lessonsPerPage, { req }) => {
-    if (!lessonsPerPage)
-        req.skipInputValidation = true;
-        return;
-}
-export const checkForLessonsPerPage : CustomValidator = async (lessonsPerPage, { req }) => {
-    if (!lessonsPerPage)
-        req.skipInputValidation = true;
-        return;
-}
-
-
-export const dateValidation = param('date').custom(checkForDate).matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/);
-export const statusValidation = param('status').custom(checkForStatus).toInt().isInt({ min: 0, max : 1 });
-export const teacherIdsValidation = param('teacherIds').custom(checkForTeacherIds).trim().matches(/^(\d+(\.\d+)?(,\s*\d+(\.\d+)?)*|\d+(\.\d+)?|\d+)$/);
-export const studentsCountValidation = param('studentsCount').custom(checkStudentsCount).trim().matches(/^(\d+(\.\d+)?(,\d+(\.\d+)?)?)$/);
-export const pageValidation = param('page').custom(checkForPage).toInt().isInt({ min: 1 });
-export const lessonsPerPageValidation = param('lessonsPerPage').custom(checkForLessonsPerPage).toInt().isInt({ min: 1 });
+export const dateValidation = query('date').optional().matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/);
+export const statusValidation = query('status').optional().toInt().isInt({ min: 0, max : 1 });
+export const teacherIdsValidation = query('teacherIds').optional().trim().matches(/^(\d+(\.\d+)?(,\s*\d+(\.\d+)?)*|\d+(\.\d+)?|\d+)$/);
+export const studentsCountValidation = query('studentsCount').optional().trim().matches(/^(\d+(\.\d+)?(,\d+(\.\d+)?)?)$/);
+export const pageValidation = query('page').optional().toInt().isInt({ min: 1 });
+export const lessonsPerPageValidation = query('lessonsPerPage').optional().toInt().isInt({ min: 1 });

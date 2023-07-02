@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const input_validation_middleware_1 = require("./middlewares/input.validation.middleware");
-const query_helpers_1 = require("./query.helpers");
+const query_helpers_1 = require("./middlewares/query.helpers");
 const index_1 = require("./index");
 const education_service_1 = require("./education.service");
 const educationService = new education_service_1.EducationService();
