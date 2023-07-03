@@ -85,21 +85,18 @@ class EducationRepository {
             const lessonsIdList = [];
             for (let i = 0; i < dateList.length; i++) {
                 let result = yield index_1.pool.query(`
-                INSERT INTO public."lessons"(
-                    "date", "title")
-                    VALUES ('${dateList[i]}', '${title}')
-                    RETURNING "id";
-            `);
-                console.log(result);
-                let lessonId = result.rows.id;
+            INSERT INTO public."lessons"("date", "title")
+            VALUES ('${dateList[i]}', '${title}')
+            RETURNING "id";
+        `);
+                let lessonId = result.rows[0].id;
                 lessonsIdList.push(lessonId);
             }
-            const countOfLessonsTeachersRequests = dateList.length * teachersIdList.length;
-            for (let k = 0; k < countOfLessonsTeachersRequests; k++) {
-                for (let g = 0; g++; g < teachersIdList.length) {
-                    yield index_1.pool.query(`
+            for (let k = 0; k < dateList.length; k++) {
+                for (let g = 0; g < teachersIdList.length; g++) {
+                    index_1.pool.query(`
                 INSERT INTO public."lesson_teachers"(
-                    "lesson_id", "teacher_id")
+                    "lesson_id", "teacher_id") 
                     VALUES (${lessonsIdList[k]}, ${teachersIdList[g]});
                 `);
                 }
