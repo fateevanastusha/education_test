@@ -21,3 +21,13 @@ export type LessonViewModel = {
     teachers : TeachersListViewModel[],
 }
 
+export type CreateLessonModel = {
+    teacherIds : number[],
+    title : string,
+    days : number[],
+    firstDate : string,
+    lastDate : string,
+    lessonsCount: number,
+}
+
+

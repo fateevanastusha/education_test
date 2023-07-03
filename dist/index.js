@@ -37,6 +37,19 @@ exports.app.get('/', input_validation_middleware_1.dateValidation, input_validat
     const result = yield educationService.getLessons(date[0], date[1], status, teacherIds, studentsCount[0], studentsCount[1], page, lessonsPerPage);
     res.send(result).status(204);
 }));
+exports.app.post('/lessons', input_validation_middleware_1.teachersIdsValidation, input_validation_middleware_1.titleValidation, input_validation_middleware_1.daysValidation, input_validation_middleware_1.firstDateValidation, input_validation_middleware_1.lessonsCountValidation, input_validation_middleware_1.lastDateValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const createModel = req.body;
+    if (!createModel.lessonsCount && !createModel.lastDate)
+        res.send(400);
+    let idList;
+    if (createModel.lessonsCount) {
+        idList = yield educationService.createLessonsWithLessonsCount(createModel);
+    }
+    else {
+        idList = yield educationService.createLessonsWithLastDate(createModel);
+    }
+    res.send(idList).status(200);
+}));
 exports.app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`Example app listening on port ${port}`);
 }));

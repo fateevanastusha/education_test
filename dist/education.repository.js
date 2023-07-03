@@ -52,7 +52,6 @@ class EducationRepository {
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `);
             const lessons = result.rows;
-            console.log(lessons);
             return yield Promise.all(lessons.map((lesson) => __awaiter(this, void 0, void 0, function* () {
                 return {
                     id: lesson.id,
@@ -61,19 +60,51 @@ class EducationRepository {
                     status: lesson.status,
                     visitCount: lesson.visitCount,
                     students: (yield index_1.pool.query(`
-                      SELECT "student_id", "visit", "name"
-                      FROM public."lesson_students" ls 
-                      JOIN public."students" s ON ls."student_id" = s."id"
-                      WHERE ls."student_id" = ANY($1::integer[]) AND ls."lesson_id" = $2;
+                      SELECT 
+                      "student_id", 
+                      "visit", 
+                      "name"
+                          FROM public."lesson_students" ls 
+                          JOIN public."students" s ON ls."student_id" = s."id"
+                          WHERE ls."student_id" = ANY($1::integer[]) AND ls."lesson_id" = $2;
                     `, [lesson.student_ids, lesson.id])).rows,
                     teachers: (yield index_1.pool.query(`
-                      SELECT "teacher_id" AS "id", "name"
-                      FROM public."lesson_teachers" lt
-                      JOIN public."teachers" t ON lt."teacher_id" = t."id"
-                      WHERE lt."teacher_id" = ANY($1::integer[]) AND lt."lesson_id" = $2;
+                      SELECT 
+                      "teacher_id" AS "id", 
+                      "name"
+                          FROM public."lesson_teachers" lt
+                          JOIN public."teachers" t ON lt."teacher_id" = t."id"
+                          WHERE lt."teacher_id" = ANY($1::integer[]) AND lt."lesson_id" = $2;
                     `, [lesson.teacher_ids, lesson.id])).rows
                 };
             })));
+        });
+    }
+    createLesson(title, dateList, teachersIdList) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const lessonsIdList = [];
+            for (let i = 0; i < dateList.length; i++) {
+                let result = yield index_1.pool.query(`
+                INSERT INTO public."lessons"(
+                    "date", "title")
+                    VALUES ('${dateList[i]}', '${title}')
+                    RETURNING "id";
+            `);
+                console.log(result);
+                let lessonId = result.rows.id;
+                lessonsIdList.push(lessonId);
+            }
+            const countOfLessonsTeachersRequests = dateList.length * teachersIdList.length;
+            for (let k = 0; k < countOfLessonsTeachersRequests; k++) {
+                for (let g = 0; g++; g < teachersIdList.length) {
+                    yield index_1.pool.query(`
+                INSERT INTO public."lesson_teachers"(
+                    "lesson_id", "teacher_id")
+                    VALUES (${lessonsIdList[k]}, ${teachersIdList[g]});
+                `);
+                }
+            }
+            return lessonsIdList;
         });
     }
 }

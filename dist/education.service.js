@@ -20,5 +20,48 @@ class EducationService {
             return yield this.educationRepository.getLessons(date_1, date_2, status, teacherIds, studentsCount_1, studentsCount_2, page, lessonsPerPage);
         });
     }
+    createLessonsWithLessonsCount(createLessonModel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            function generateDates(firstDate, days, lessons) {
+                const dates = [];
+                const maxLessons = 300;
+                const oneYear = 365;
+                let currentDate = new Date(firstDate);
+                let lessonsCount = 0;
+                while (lessonsCount < maxLessons && lessonsCount < oneYear && lessonsCount < lessons) {
+                    if (days.includes(currentDate.getDay())) {
+                        dates.push((new Date(currentDate)).toISOString().split('T')[0]);
+                        lessonsCount++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                return dates;
+            }
+            const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lessonsCount);
+            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds);
+        });
+    }
+    createLessonsWithLastDate(createLessonModel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            function generateDates(firstDate, days, last) {
+                const dates = [];
+                const maxLessons = 300;
+                const oneYear = 365;
+                let lastDate = new Date(last);
+                let currentDate = new Date(firstDate);
+                let lessonsCount = 0;
+                while (lessonsCount < maxLessons && lessonsCount < oneYear && currentDate < lastDate) {
+                    if (days.includes(currentDate.getDay())) {
+                        dates.push((new Date(currentDate)).toISOString().split('T')[0]);
+                        lessonsCount++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                return dates;
+            }
+            const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lastDate);
+            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds);
+        });
+    }
 }
 exports.EducationService = EducationService;
