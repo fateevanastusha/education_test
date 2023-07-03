@@ -14,7 +14,6 @@ import {
 } from "./middlewares/input.validation.middleware";
 import {queryHelpers} from "./middlewares/query.helpers";
 import {CreateLessonModel, LessonViewModel} from "./education.models";
-import {app} from "./index";
 import {educationService} from "./composition.root";
 
 export const educationRouter = Router();
@@ -34,6 +33,7 @@ educationRouter.get('/',
         const studentsCount = await queryHelpers.studentsCount(<string>req.query.studentsCount)
         const page = await queryHelpers.page(<string>req.query.page)
         const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage)
+
         const result : LessonViewModel[] = await educationService.getLessons(
             date[0],
             date[1],
@@ -44,6 +44,7 @@ educationRouter.get('/',
             page,
             lessonsPerPage
         )
+
         res.send(result).status(204)
     })
 
@@ -56,7 +57,9 @@ educationRouter.post('/lessons',
     lastDateValidation,
     inputValidationMiddleware,
     async (req : Request, res : Response) => {
+
         const createModel : CreateLessonModel = req.body
+
         if (!createModel.lessonsCount && !createModel.lastDate)res.send(400)
         let idList : number[]
         if(createModel.lessonsCount){
@@ -64,5 +67,6 @@ educationRouter.post('/lessons',
         } else {
             idList = await educationService.createLessonsWithLastDate(createModel)
         }
+
         res.send(idList).status(200)
     })

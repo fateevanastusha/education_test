@@ -47,14 +47,19 @@ export class EducationRepository {
                     ORDER BY l."id"
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `);
+
         const lessons = result.rows
+
         return await Promise.all(lessons.map(async (lesson : any) => {
+
             let mappedLesson = {
+
                 id: lesson.id,
                 date: lesson.date.toISOString().split('T')[0],
                 title: lesson.title,
                 status: lesson.status,
                 visitCount: lesson.visitCount,
+
                 students: (await pool.query(`
                       SELECT 
                       "student_id", 
@@ -64,7 +69,8 @@ export class EducationRepository {
                           JOIN public."students" s ON ls."student_id" = s."id"
                           WHERE ls."student_id" = ANY($1::integer[]) AND ls."lesson_id" = $2;
                     `, [lesson.student_ids, lesson.id])).rows,
-                                teachers: (await pool.query(`
+
+                teachers: (await pool.query(`
                       SELECT 
                       "teacher_id" AS "id", 
                       "name"
@@ -73,6 +79,7 @@ export class EducationRepository {
                           WHERE lt."teacher_id" = ANY($1::integer[]) AND lt."lesson_id" = $2;
                     `, [lesson.teacher_ids, lesson.id])).rows
             }
+
             let students = [...mappedLesson.students];
             let visitedStudents = students.filter(a => a.visit === true);
             mappedLesson.visitCount = visitedStudents.length;
@@ -80,18 +87,27 @@ export class EducationRepository {
         }))
     }
     async createLesson(title : string, dateList : string[], teachersIdList : number[]): Promise<number[]> {
+
         const lessonsIdList = [];
+
         for (let i = 0; i < dateList.length; i ++){
+
             let result = await pool.query(`
             INSERT INTO public."lessons"("date", "title")
             VALUES ('${dateList[i]}', '${title}')
             RETURNING "id";
+            
         `);
+
             let lessonId = result.rows[0].id
             lessonsIdList.push(lessonId);
+
         }
+
         for (let k = 0; k < dateList.length; k++){
+
             for (let g = 0; g < teachersIdList.length; g++){
+
                 pool.query(`
                 INSERT INTO public."lesson_teachers"(
                     "lesson_id", "teacher_id") 
@@ -99,6 +115,7 @@ export class EducationRepository {
                 `)
             }
         }
+
         return lessonsIdList;
     }
 }
