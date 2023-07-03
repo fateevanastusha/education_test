@@ -18,11 +18,11 @@ class EducationRepository {
             const result = yield index_1.pool.query(`
         SELECT 
                 l."id", l."date", l."title", l."status", 
-                COUNT(ls."student_id") AS "visitCount",
+                COUNT(DISTINCT ls."student_id") AS "visitCount",
                 array_agg(DISTINCT ls."student_id") AS "student_ids",
                 array_agg(DISTINCT lt."teacher_id") AS "teacher_ids"
                     FROM public."lessons" l
-                    LEFT JOIN public."lesson_students" ls ON l."id" = ls."lesson_id" AND ls."visit" = true
+                    LEFT JOIN public."lesson_students" ls ON l."id" = ls."lesson_id"
                     LEFT JOIN public."lesson_teachers" lt ON l."id" = lt."lesson_id"
                     WHERE 
                     CASE
@@ -37,25 +37,25 @@ class EducationRepository {
                             ELSE l."status" IN (0,1) 
                             END
                     GROUP BY l."id", l."date", l."title", l."status"
-                    HAVING
+                    HAVING 
                         ((${studentsCount_1} IS NULL AND ${studentsCount_2} IS NULL)
                         OR
-                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NULL AND COUNT(ls."student_id") = ${studentsCount_1})
+                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NULL AND COUNT(DISTINCT ls."student_id") = ${studentsCount_1})
                         OR
-                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NOT NULL AND COUNT(ls."student_id") BETWEEN ${studentsCount_1} AND ${studentsCount_2}))
+                        (${studentsCount_1} IS NOT NULL AND ${studentsCount_2} IS NOT NULL AND COUNT(DISTINCT ls."student_id") BETWEEN ${studentsCount_1} AND ${studentsCount_2}))
                         AND
                         (CASE
                         WHEN ${teacherIds} IS NULL THEN true
                         ELSE ARRAY(SELECT unnest(array_agg(DISTINCT lt."teacher_id")::integer[])) && ARRAY[${teacherIds}]::integer[]
                         END)
-                    ORDER BY l."date"
+                    ORDER BY l."id"
                     OFFSET ${skipSize} LIMIT ${lessonsPerPage}
         `);
             const lessons = result.rows;
             return yield Promise.all(lessons.map((lesson) => __awaiter(this, void 0, void 0, function* () {
-                return {
+                let mappedLesson = {
                     id: lesson.id,
-                    date: lesson.date,
+                    date: lesson.date.toISOString().split('T')[0],
                     title: lesson.title,
                     status: lesson.status,
                     visitCount: lesson.visitCount,
@@ -77,6 +77,10 @@ class EducationRepository {
                           WHERE lt."teacher_id" = ANY($1::integer[]) AND lt."lesson_id" = $2;
                     `, [lesson.teacher_ids, lesson.id])).rows
                 };
+                let students = [...mappedLesson.students];
+                let visitedStudents = students.filter(a => a.visit === true);
+                mappedLesson.visitCount = visitedStudents.length;
+                return mappedLesson;
             })));
         });
     }

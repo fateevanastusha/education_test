@@ -1,10 +1,8 @@
 
 export const queryHelpers = {
     async date (date : string | undefined) {
-        console.log(date)
         if(!date) return [null, null]
         const dataList = date.trim().split(',')
-        console.log(dataList)
         if(!dataList[1]) return [`'${dataList[0]}'`, null];
         return [`'${dataList[0]}'`, `'${dataList[1]}'`];
     },

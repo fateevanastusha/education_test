@@ -1,25 +1,10 @@
-import {EducationService} from "./education.service";
-import {
-    dateValidation,
-    daysValidation,
-    firstDateValidation,
-    inputValidationMiddleware, lastDateValidation, lessonsCountValidation,
-    lessonsPerPageValidation,
-    pageValidation,
-    statusValidation,
-    studentsCountValidation,
-    teacherIdsValidation,
-    teachersIdsValidation,
-    titleValidation
-} from "./middlewares/input.validation.middleware";
-import {Request, Response} from "express";
-import {queryHelpers} from "./middlewares/query.helpers";
-import {CreateLessonModel, LessonViewModel} from "./education.models";
+import {educationRouter} from "./education.router";
 
 const express = require('express')
 const bodyParser = require('body-parser')
 export const app = express()
 app.use(bodyParser())
+app.use('/', educationRouter)
 const port = 3000
 
 const Pool = require('pg').Pool
@@ -29,56 +14,6 @@ export const pool = new Pool({
     database: 'EducationTestDB',
     password: 'nodejs',
     port: 5432
-})
-
-const educationService = new EducationService()
-
-app.get('/',
-    dateValidation,
-    statusValidation,
-    teacherIdsValidation,
-    studentsCountValidation,
-    pageValidation,
-    lessonsPerPageValidation,
-    inputValidationMiddleware,
-    async (req : Request, res : Response) => {
-        const date = await queryHelpers.date(<string>req.query.date)
-        const status = await queryHelpers.status(<string>req.query.status)
-        const teacherIds = await queryHelpers.teacherIds(<string>req.query.teacherIds)
-        const studentsCount = await queryHelpers.studentsCount(<string>req.query.studentsCount)
-        const page = await queryHelpers.page(<string>req.query.page)
-        const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage)
-        const result : LessonViewModel[] = await educationService.getLessons(
-            date[0],
-            date[1],
-            status,
-            teacherIds,
-            studentsCount[0],
-            studentsCount[1],
-            page,
-            lessonsPerPage
-        )
-        res.send(result).status(204)
-    })
-
-app.post('/lessons',
-    teachersIdsValidation,
-    titleValidation,
-    daysValidation,
-    firstDateValidation,
-    lessonsCountValidation,
-    lastDateValidation,
-    inputValidationMiddleware,
-    async (req : Request, res : Response) => {
-    const createModel : CreateLessonModel = req.body
-    if (!createModel.lessonsCount && !createModel.lastDate)res.send(400)
-    let idList : number[]
-        if(createModel.lessonsCount){
-            idList = await educationService.createLessonsWithLessonsCount(createModel)
-        } else {
-            idList = await educationService.createLessonsWithLastDate(createModel)
-        }
-    res.send(idList).status(200)
 })
 
 app.listen(port, async () => {

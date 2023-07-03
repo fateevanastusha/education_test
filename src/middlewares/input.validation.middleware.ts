@@ -16,9 +16,7 @@ export const checkArrayForNumbers : CustomValidator = async array => {
     if (!status) throw new Error('array must contain numbers');
     return true;
 }
-
 //query check
-
 export const dateValidation = query('date').optional().isString().withMessage('must be string').matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/).withMessage('must be date')
 export const statusValidation = query('status').optional().toInt().isInt({ min: 0, max : 1 });
 export const teacherIdsValidation = query('teacherIds').optional().trim().matches(/^(\d+(\.\d+)?(,\s*\d+(\.\d+)?)*|\d+(\.\d+)?|\d+)$/);

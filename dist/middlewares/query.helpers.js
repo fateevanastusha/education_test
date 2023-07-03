@@ -13,11 +13,9 @@ exports.queryHelpers = void 0;
 exports.queryHelpers = {
     date(date) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(date);
             if (!date)
                 return [null, null];
             const dataList = date.trim().split(',');
-            console.log(dataList);
             if (!dataList[1])
                 return [`'${dataList[0]}'`, null];
             return [`'${dataList[0]}'`, `'${dataList[1]}'`];

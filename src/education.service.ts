@@ -2,9 +2,7 @@ import {CreateLessonModel, LessonViewModel} from "./education.models";
 import {EducationRepository} from "./education.repository";
 
 export class EducationService {
-    educationRepository : EducationRepository
-    constructor() {
-     this.educationRepository = new EducationRepository()
+    constructor(protected educationRepository : EducationRepository) {
     }
     async getLessons(date_1 : string | null,
                      date_2 : string | null,
