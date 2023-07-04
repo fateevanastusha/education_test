@@ -12,7 +12,6 @@ export class EducationService {
                      studentsCount_2 : string | null,
                      page : number,
                      lessonsPerPage : number) : Promise <LessonViewModel[]>{
-
         return await this.educationRepository.getLessons(
             date_1,
             date_2,

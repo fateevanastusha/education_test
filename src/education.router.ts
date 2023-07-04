@@ -27,20 +27,20 @@ educationRouter.get('/',
     lessonsPerPageValidation,
     inputValidationMiddleware,
     async (req : Request, res : Response) => {
-        const date = await queryHelpers.date(<string>req.query.date)
-        const status = await queryHelpers.status(<string>req.query.status)
-        const teacherIds = await queryHelpers.teacherIds(<string>req.query.teacherIds)
-        const studentsCount = await queryHelpers.studentsCount(<string>req.query.studentsCount)
-        const page = await queryHelpers.page(<string>req.query.page)
-        const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage)
+        const [firstDate, lastDate] = await queryHelpers.date(<string>req.query.date);
+        const status = await queryHelpers.status(<string>req.query.status);
+        const teacherIds = await queryHelpers.teacherIds(<string>req.query.teacherIds);
+        const [studentsCountFirst, studentCountLast] = await queryHelpers.studentsCount(<string>req.query.studentsCount);
+        const page = await queryHelpers.page(<string>req.query.page);
+        const lessonsPerPage = await queryHelpers.lessonsPerPage(<string>req.query.lessonsPerPage);
 
         const result : LessonViewModel[] = await educationService.getLessons(
-            date[0],
-            date[1],
+            firstDate,
+            lastDate,
             status,
             teacherIds,
-            studentsCount[0],
-            studentsCount[1],
+            studentsCountFirst,
+            studentCountLast,
             page,
             lessonsPerPage
         )
@@ -60,7 +60,10 @@ educationRouter.post('/lessons',
 
         const createModel : CreateLessonModel = req.body
 
-        if (!createModel.lessonsCount && !createModel.lastDate)res.send(400)
+        if (!createModel.lessonsCount && !createModel.lastDate) {
+            res.send(400);
+            return;
+        }
         let idList : number[]
         if(createModel.lessonsCount){
             idList = await educationService.createLessonsWithLessonsCount(createModel)
@@ -68,5 +71,5 @@ educationRouter.post('/lessons',
             idList = await educationService.createLessonsWithLastDate(createModel)
         }
 
-        res.send(idList).status(200)
+        res.send(idList).status(200);
     })
