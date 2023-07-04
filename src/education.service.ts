@@ -29,8 +29,8 @@ export class EducationService {
         function generateDates(firstDate: string, days: number[], lessons : number): string[] {
             const dates: string[] = [];
             const maxLessons = 300;
-            const secondDate = new Date(firstDate)
-            const lastDate = secondDate.setFullYear(secondDate.getFullYear() + 1)
+            const lastDate = new Date(firstDate)
+            lastDate.setFullYear(lastDate.getFullYear() + 1)
             let currentDate = new Date(firstDate);
             let lessonsCount = 0;
 
