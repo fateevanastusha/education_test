@@ -1,5 +1,6 @@
 import {CreateLessonModel, LessonViewModel} from "./education.models";
 import {EducationRepository} from "./education.repository";
+import {lastDateValidation} from "./middlewares/input.validation.middleware";
 
 export class EducationService {
     constructor(protected educationRepository : EducationRepository) {
@@ -28,11 +29,12 @@ export class EducationService {
         function generateDates(firstDate: string, days: number[], lessons : number): string[] {
             const dates: string[] = [];
             const maxLessons = 300;
-            const oneYear = 365;
+            const secondDate = new Date(firstDate)
+            const lastDate = secondDate.setFullYear(secondDate.getFullYear() + 1)
             let currentDate = new Date(firstDate);
             let lessonsCount = 0;
 
-            while (lessonsCount < maxLessons && lessonsCount < oneYear && lessonsCount < lessons ) {
+            while (lessonsCount < maxLessons && currentDate < lastDate && lessonsCount < lessons ) {
 
                 if (days.includes(currentDate.getDay())) {
                     dates.push((new Date(currentDate)).toISOString().split('T')[0]);
@@ -54,17 +56,18 @@ export class EducationService {
         function generateDates(firstDate: string, days: number[], last: string): string[] {
             const dates: string[] = [];
             const maxLessons = 300;
-            const oneYear = 365;
             let lastDate = new Date(last);
             let currentDate = new Date(firstDate);
             let lessonsCount = 0;
 
-            while (lessonsCount < maxLessons && lessonsCount < oneYear && currentDate < lastDate) {
+            while (lessonsCount < maxLessons && currentDate < lastDate) {
 
                 if (days.includes(currentDate.getDay())) {
-                    dates.push((new Date(currentDate)).toISOString().split('T')[0]);
+                    let dateWithoutTime = (new Date(currentDate)).toISOString().split('T')[0];
+                    dates.push(dateWithoutTime);
                     lessonsCount++;
                 }
+
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 

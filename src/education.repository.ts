@@ -94,10 +94,9 @@ export class EducationRepository {
             RETURNING "id";
         `)
 
-        const lessonsIdList : number[] = result.rows.map((a : {id : number}) => a.id);
+        const lessonsIdList : number[] = result.rows.map((lessonObject : LessonReturnModel) => lessonObject.id);
         const teachersAndLessonsIdList : string = lessonsIdList
-                .flatMap((x : number) => teachersIdList
-                .map((y : number)=> `(${x},${y})`))
+                .flatMap((lessonId : number) => teachersIdList.map((teacherId : number)=> `(${lessonId},${teacherId})`))
                 .join(',');
 
         await pool.query(`
@@ -108,4 +107,8 @@ export class EducationRepository {
 
         return lessonsIdList;
     }
+}
+
+type LessonReturnModel ={
+    id : number
 }
