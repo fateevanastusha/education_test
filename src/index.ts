@@ -5,15 +5,15 @@ const bodyParser = require('body-parser')
 export const app = express()
 app.use(bodyParser())
 app.use('/', educationRouter)
-const port = 3001
+const port = process.env.appport
 
 const Pool = require('pg').Pool
 export const pool = new Pool({
-    user: 'nodejs',
-    host: 'localhost',
-    database: 'EducationTestDB',
-    password: 'nodejs',
-    port: 5432
+    user: process.env.pgusers,
+    host: process.env.pghost,
+    database: process.env.pgdatabase,
+    password: process.env.pgpassword,
+    port: process.env.pgport
 })
 
 app.listen(port, async () => {
