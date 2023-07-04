@@ -86,23 +86,20 @@ export class EducationRepository {
             return mappedLesson;
         }))
     }
-    async createLesson(title : string, dateList : string[], teachersIdList : number[]): Promise<number[]> {
+    async createLesson(title : string, dateList : string[], mappedDateList : string, teachersIdList : number[]): Promise<number[]> {
 
         const lessonsIdList = [];
 
-        for (let i = 0; i < dateList.length; i ++){
-
-            let result = await pool.query(`
+        const result = await pool.query(`
             INSERT INTO public."lessons"("date", "title")
-            VALUES ('${dateList[i]}', '${title}')
+            VALUES ${mappedDateList}
             RETURNING "id";
-            
-        `);
+        `)
 
-            let lessonId = result.rows[0].id
-            lessonsIdList.push(lessonId);
-
+        for(let z = 0; z < result.rows.length; z ++){
+            lessonsIdList.push(result.rows[z].id)
         }
+
 
         for (let k = 0; k < dateList.length; k++){
 

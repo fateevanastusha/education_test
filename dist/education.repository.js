@@ -84,17 +84,16 @@ class EducationRepository {
             })));
         });
     }
-    createLesson(title, dateList, teachersIdList) {
+    createLesson(title, dateList, mappedDateList, teachersIdList) {
         return __awaiter(this, void 0, void 0, function* () {
             const lessonsIdList = [];
-            for (let i = 0; i < dateList.length; i++) {
-                let result = yield index_1.pool.query(`
+            const result = yield index_1.pool.query(`
             INSERT INTO public."lessons"("date", "title")
-            VALUES ('${dateList[i]}', '${title}')
+            VALUES ${mappedDateList}
             RETURNING "id";
         `);
-                let lessonId = result.rows[0].id;
-                lessonsIdList.push(lessonId);
+            for (let z = 0; z < result.rows.length; z++) {
+                lessonsIdList.push(result.rows[z].id);
             }
             for (let k = 0; k < dateList.length; k++) {
                 for (let g = 0; g < teachersIdList.length; g++) {

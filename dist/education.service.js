@@ -37,7 +37,8 @@ class EducationService {
                 return dates;
             }
             const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lessonsCount);
-            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds);
+            const mappedDateList = dateList.map(date => `('${date}', '${createLessonModel.title}')`).join(', ');
+            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, mappedDateList, createLessonModel.teacherIds);
         });
     }
     createLessonsWithLastDate(createLessonModel) {
@@ -59,7 +60,8 @@ class EducationService {
                 return dates;
             }
             const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lastDate);
-            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds);
+            const mappedDateList = dateList.map(date => `('${date}', '${createLessonModel.title}')`).join(', ');
+            return yield this.educationRepository.createLesson(createLessonModel.title, dateList, mappedDateList, createLessonModel.teacherIds);
         });
     }
 }

@@ -47,7 +47,8 @@ export class EducationService {
         }
 
         const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lessonsCount)
-        return await this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds)
+        const mappedDateList = dateList.map(date => `('${date}', '${createLessonModel.title}')`).join(', ')
+        return await this.educationRepository.createLesson(createLessonModel.title, dateList, mappedDateList, createLessonModel.teacherIds)
     }
     async createLessonsWithLastDate(createLessonModel: CreateLessonModel): Promise<number[]> {
 
@@ -73,6 +74,7 @@ export class EducationService {
         }
 
         const dateList = generateDates(createLessonModel.firstDate, createLessonModel.days, createLessonModel.lastDate);
-        return await this.educationRepository.createLesson(createLessonModel.title, dateList, createLessonModel.teacherIds)
+        const mappedDateList = dateList.map(date => `('${date}', '${createLessonModel.title}')`).join(', ')
+        return await this.educationRepository.createLesson(createLessonModel.title, dateList, mappedDateList, createLessonModel.teacherIds)
     }
 }
