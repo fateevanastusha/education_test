@@ -2,7 +2,7 @@ import describe from "node:test";
 import {app} from "../../index";
 import request from "supertest";
 
-describe('/course', () => {
+describe('/education', () => {
     let res
     it('should return 10 lessons', async () => {
         res = await request(app)

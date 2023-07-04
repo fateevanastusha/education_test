@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 export const app = express()
 app.use(bodyParser())
 app.use('/', educationRouter)
-const port = 3000
+const port = 3001
 
 const Pool = require('pg').Pool
 export const pool = new Pool({
