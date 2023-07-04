@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lessonsCountValidation = exports.lastDateValidation = exports.firstDateValidation = exports.daysValidation = exports.titleValidation = exports.teachersIdsValidation = exports.lessonsPerPageValidation = exports.pageValidation = exports.studentsCountValidation = exports.teacherIdsValidation = exports.statusValidation = exports.dateValidation = exports.checkArrayForNumbers = exports.inputValidationMiddleware = void 0;
+exports.lessonsCountValidation = exports.lastDateValidation = exports.firstDateValidation = exports.daysValidation = exports.titleValidation = exports.teachersIdsValidation = exports.lessonsPerPageValidation = exports.pageValidation = exports.studentsCountValidation = exports.teacherIdsValidation = exports.statusValidation = exports.dateValidation = exports.checkDays = exports.checkArrayForNumbers = exports.inputValidationMiddleware = void 0;
 const express_validator_1 = require("express-validator");
 const inputValidationMiddleware = (req, res, next) => {
     const error = (0, express_validator_1.validationResult)(req);
@@ -28,6 +28,13 @@ const checkArrayForNumbers = (array) => __awaiter(void 0, void 0, void 0, functi
     return true;
 });
 exports.checkArrayForNumbers = checkArrayForNumbers;
+const checkDays = (array) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = array.every((a) => a < 7);
+    if (!status)
+        throw new Error('array must contain only days!');
+    return true;
+});
+exports.checkDays = checkDays;
 //query check
 exports.dateValidation = (0, express_validator_1.query)('date').optional().isString().withMessage('must be string').matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/).withMessage('must be date');
 exports.statusValidation = (0, express_validator_1.query)('status').optional().toInt().isInt({ min: 0, max: 1 });
@@ -37,7 +44,7 @@ exports.pageValidation = (0, express_validator_1.query)('page').optional().toInt
 exports.lessonsPerPageValidation = (0, express_validator_1.query)('lessonsPerPage').optional().toInt().isInt({ min: 1 });
 exports.teachersIdsValidation = (0, express_validator_1.body)('teacherIds').isArray().custom(exports.checkArrayForNumbers);
 exports.titleValidation = (0, express_validator_1.body)('title').isString().withMessage('must be string').isLength({ max: 100 });
-exports.daysValidation = (0, express_validator_1.body)('days').isArray().custom(exports.checkArrayForNumbers);
+exports.daysValidation = (0, express_validator_1.body)('days').isArray().custom(exports.checkArrayForNumbers).custom(exports.checkDays);
 exports.firstDateValidation = (0, express_validator_1.body)('firstDate').isString().withMessage('must be string').matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('must be date');
 exports.lastDateValidation = (0, express_validator_1.body)('lastDate').optional().isString().withMessage('must be string').matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('must be date');
 exports.lessonsCountValidation = (0, express_validator_1.body)('lessonsCount').optional().isInt({ min: 1, max: 300 });

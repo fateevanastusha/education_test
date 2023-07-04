@@ -16,6 +16,12 @@ export const checkArrayForNumbers : CustomValidator = async array => {
     if (!status) throw new Error('array must contain numbers');
     return true;
 }
+
+export const checkDays : CustomValidator = async array => {
+    const status = array.every((a : number) => a < 7);
+    if (!status) throw new Error('array must contain only days!');
+    return true;
+}
 //query check
 export const dateValidation = query('date').optional().isString().withMessage('must be string').matches(/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})?$/).withMessage('must be date')
 export const statusValidation = query('status').optional().toInt().isInt({ min: 0, max : 1 });
@@ -26,7 +32,7 @@ export const lessonsPerPageValidation = query('lessonsPerPage').optional().toInt
 
 export const teachersIdsValidation = body('teacherIds').isArray().custom(checkArrayForNumbers);
 export const titleValidation = body('title').isString().withMessage('must be string').isLength({max : 100});
-export const daysValidation = body('days').isArray().custom(checkArrayForNumbers);
+export const daysValidation = body('days').isArray().custom(checkArrayForNumbers).custom(checkDays);
 export const firstDateValidation = body('firstDate').isString().withMessage('must be string').matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('must be date');
 export const lastDateValidation = body('lastDate').optional().isString().withMessage('must be string').matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('must be date');
 export const lessonsCountValidation = body('lessonsCount').optional().isInt({min : 1, max : 300});
