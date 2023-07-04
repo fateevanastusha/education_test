@@ -95,7 +95,10 @@ export class EducationRepository {
         `)
 
         const lessonsIdList : number[] = result.rows.map((a : {id : number}) => a.id);
-        const teachersAndLessonsIdList : string = lessonsIdList.flatMap((x : number) => teachersIdList.map((y : number)=> `(${x},${y})`)).join(',');
+        const teachersAndLessonsIdList : string = lessonsIdList
+                .flatMap((x : number) => teachersIdList
+                .map((y : number)=> `(${x},${y})`))
+                .join(',');
 
         await pool.query(`
                 INSERT INTO public."lesson_teachers"(
